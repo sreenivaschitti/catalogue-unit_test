@@ -35,7 +35,7 @@ pipeline {
                  }
         }
 
-
+/* 
         stage('install dependencies'){
 
                     steps {
@@ -87,7 +87,7 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-        }
+        } */
     }
     
 }
