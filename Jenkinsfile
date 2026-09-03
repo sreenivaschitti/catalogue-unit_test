@@ -15,7 +15,6 @@ pipeline {
                 url: 'https://github.com/sreenivaschitti/catalogue-unit_test.git'
 
 
-                   
                     }   
 
         }
