@@ -11,7 +11,7 @@ pipeline {
 
              steps {
 
-                git branch 'main',
+                git branch: 'main',
                 url: 'https://github.com/sreenivaschitti/catalogue-unit_test.git'
 
 
