@@ -127,9 +127,9 @@ pipeline {
                                 trivy image \
                                     --scanners vuln \
                                     --pkg-types os \
-                                    --severity HIGH --exit-code 1 \
-                                    --severity MEDIUM --exit-code 0 \
+                                    --severity HIGH ,CRITICAL \
                                     --format table \
+                                    --exit-code 1 \
                                     --quiet \
                                     ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
                             """,
