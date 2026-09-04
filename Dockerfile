@@ -22,4 +22,6 @@ EXPOSE 8080
 
 COPY --from=builder /app /app
 
+USER nonroot
+
 CMD ["server.js"]
