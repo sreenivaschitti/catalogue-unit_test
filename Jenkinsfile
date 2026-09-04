@@ -128,6 +128,7 @@ pipeline {
                                     --scanners vuln \
                                     --pkg-types os \
                                     --severity HIGH ,CRITICAL \
+                                    
                                     --format table \
                                     --exit-code 1 \
                                     --quiet \
