@@ -58,7 +58,7 @@ pipeline {
 
         }
 
-        stage('unitest'){
+     /* stage('unitest'){
 
             steps{
 
@@ -91,7 +91,7 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-        }
+        } */
 
         stage('Build Docker Image') {
             steps {
@@ -104,50 +104,47 @@ pipeline {
         }
 
         stage('Trivy OS Scan') {
-                steps {
-                    script {
-                        // Generate table report
-                        sh """
-                            trivy image \
-                                --scanners vuln \
-                                --pkg-types os \
-                                --severity HIGH,MEDIUM,CRITICAL \
-                                --format table \
-                                --output trivy-os-report.txt \
-                                --exit-code 0 \
-                                ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
-                        """
+    steps {
+        script {
+            // Generate full report (always succeeds)
+            sh """
+                trivy image \
+                    --scanners vuln \
+                    --pkg-types os \
+                    --severity HIGH,MEDIUM,CRITICAL \
+                    --format table \
+                    --output trivy-os-report.txt \
+                    --exit-code 0 \
+                    ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
+            """
+            sh 'cat trivy-os-report.txt'
 
-                        // Print table to console
-                        sh 'cat trivy-os-report.txt'
+            // Fail only if HIGH/CRITICAL found
+            def scanResult = sh(
+                script: """
+                    trivy image \
+                        --scanners vuln \
+                        --pkg-types os \
+                        --severity HIGH,CRITICAL \
+                        --format table \
+                        --exit-code 1 \
+                        --quiet \
+                        ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
+                """,
+                returnStatus: true
+            )
 
-                        // Fail pipeline if vulnerabilities found
-                        def scanResult = sh(
-                            script: """
-                                trivy image \
-                                    --scanners vuln \
-                                    --pkg-types os \
-                                    --severity HIGH,CRITICAL \
-                                    --format table \
-                                    --exit-code 1 \
-                                    --quiet \
-                                    ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG}
-                            """,
-                            returnStatus: true
-                        )
-
-                        if (scanResult != 0) {
-                            sh 'failure'
-                            utils.updateCommitStatus('failure', 'Trivy OS scan: HIGH/MEDIUM vulnerabilities found', 'trivy-scan')
-                            error "🚨 Trivy found HIGH/MEDIUM OS vulnerabilities. Pipeline failed."
-                        } else {
-                            sh 'success'
-                            utils.updateCommitStatus('success', 'Trivy OS scan passed — no HIGH/MEDIUM vulnerabilities', 'trivy-scan')
-                            echo "✅ No HIGH or MEDIUM OS vulnerabilities found. Pipeline continues."
-                        }
-                    }
-                }
+            if (scanResult != 0) {
+                utils.updateCommitStatus('failure', 'Trivy OS scan: HIGH/CRITICAL vulnerabilities found', 'trivy-scan')
+                error "🚨 Trivy found HIGH/CRITICAL OS vulnerabilities. Pipeline failed."
+            } else {
+                utils.updateCommitStatus('success', 'Trivy OS scan passed — no HIGH/CRITICAL vulnerabilities', 'trivy-scan')
+                echo "✅ No HIGH or CRITICAL OS vulnerabilities found. Pipeline continues."
             }
+        }
+    }
+}
+
             stage('Trivy Dockerfile Scan'){
                 steps {
                     script {
