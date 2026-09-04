@@ -137,9 +137,11 @@ pipeline {
                         )
 
                         if (scanResult != 0) {
+                            sh 'failure'
                             utils.updateCommitStatus('failure', 'Trivy OS scan: HIGH/MEDIUM vulnerabilities found', 'trivy-scan')
                             error "🚨 Trivy found HIGH/MEDIUM OS vulnerabilities. Pipeline failed."
                         } else {
+                            sh 'success'
                             utils.updateCommitStatus('success', 'Trivy OS scan passed — no HIGH/MEDIUM vulnerabilities', 'trivy-scan')
                             echo "✅ No HIGH or MEDIUM OS vulnerabilities found. Pipeline continues."
                         }
