@@ -1,14 +1,16 @@
 # ---------- Stage 1 ----------
-FROM node:20.20.2-alpine3.23 AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json .
-COPY *.js .
-RUN npm install
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY *.js ./
+
 
 # ---------- Stage 2 ----------
-FROM gcr.io/distroless/nodejs20-debian13:nonroot
+FROM gcr.io/distroless/nodejs24-debian13:nonroot
 
 WORKDIR /app
 
@@ -19,8 +21,5 @@ LABEL project="roboshop" \
 EXPOSE 8080
 
 COPY --from=builder /app /app
-
-# ENV removed — handled by Kubernetes ConfigMap
-
 
 CMD ["server.js"]
