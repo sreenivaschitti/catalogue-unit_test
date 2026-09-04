@@ -111,7 +111,7 @@ pipeline {
                             trivy image \
                                 --scanners vuln \
                                 --pkg-types os \
-                                --severity HIGH,MEDIUM \
+                                --severity HIGH,MEDIUM,CRITICAL \
                                 --format table \
                                 --output trivy-os-report.txt \
                                 --exit-code 0 \
@@ -127,8 +127,7 @@ pipeline {
                                 trivy image \
                                     --scanners vuln \
                                     --pkg-types os \
-                                    --severity HIGH ,CRITICAL \
-                                    
+                                    --severity HIGH,CRITICAL \
                                     --format table \
                                     --exit-code 1 \
                                     --quiet \
