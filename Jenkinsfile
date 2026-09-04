@@ -3,6 +3,10 @@ pipeline {
 
     environment {
         appVersion = ""
+        // Replace with your actual registry username and repository name
+        REGISTRY_USER = 'sreenivaschitti'
+        IMAGE_NAME    = 'Roboshop-catalog'
+        IMAGE_TAG     = "${env.BUILD_NUMBER}" // Uses the unique Jenkins build number as a tag
     }
 
     
@@ -88,6 +92,19 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Builds the image using the Dockerfile in your workspace root
+                    sh "docker build -t ${REGISTRY_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
+                    
+                }
+            }
+        }
+
+        
+
     }
     
 }
